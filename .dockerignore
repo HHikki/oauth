@@ -1,0 +1,28 @@
+# Ignorar archivos de desarrollo
+.git
+.gitignore
+.vscode
+.idea
+*.md
+README.md
+INSTALACION.md
+
+# Ignorar dependencias (se instalarán en el build)
+/vendor/
+/node_modules/
+composer.lock
+composer.phar
+package-lock.json
+
+# Ignorar archivos de Firebase CLI
+.firebase/
+firebase-debug.log
+.firebaserc
+firebase.json
+database.rules.json
+
+# Ignorar archivos temporales
+*.log
+*.tmp
+.DS_Store
+Thumbs.db

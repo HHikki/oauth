@@ -1,0 +1,8 @@
+{
+  "name": "oauth-php-app",
+  "version": "1.0.0",
+  "description": "Sistema de gestión de clientes con Firebase",
+  "scripts": {
+    "start": "php -S 0.0.0.0:${PORT:-8080}"
+  }
+}

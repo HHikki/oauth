@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: oauth-php-app
+    env: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: 8080
