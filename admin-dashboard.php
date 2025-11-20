@@ -231,13 +231,13 @@ $newThisMonth = $clientsByMonth[date('n') - 1];
         <div class="nav-item active">
             <i class="fas fa-th-large"></i> Dashboard
         </div>
-        <div class="nav-item" onclick="window.location.href='dashboard.php'">
+        <div class="nav-item" onclick="window.location.href='admin-clients.php'">
             <i class="fas fa-users"></i> Clientes
         </div>
-        <div class="nav-item">
+        <div class="nav-item" onclick="window.location.href='admin-reports.php'">
             <i class="fas fa-chart-bar"></i> Reportes
         </div>
-        <div class="nav-item">
+        <div class="nav-item" onclick="window.location.href='admin-config.php'">
             <i class="fas fa-cog"></i> Configuración
         </div>
         <div class="nav-item" onclick="window.location.href='logout.php'">
@@ -330,7 +330,7 @@ $newThisMonth = $clientsByMonth[date('n') - 1];
                         <i class="fas fa-check-circle"></i> Sistema funcionando correctamente
                     </div>
                     <div class="d-grid gap-2 mt-3">
-                        <button class="btn-action" onclick="window.location.href='dashboard.php'">
+                        <button class="btn-action" onclick="window.location.href='admin-clients.php'">
                             <i class="fas fa-users"></i> Ver Todos los Clientes
                         </button>
                         <button class="btn btn-outline-primary" onclick="window.location.href='generate_pdf.php'">
