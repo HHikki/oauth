@@ -101,8 +101,8 @@ function setSecurityHeaders() {
     // XSS Protection
     header('X-XSS-Protection: 1; mode=block');
     
-    // Content Security Policy (ajustar según necesidades)
-    header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://www.gstatic.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; connect-src 'self' https://identitytoolkit.googleapis.com https://*.firebaseio.com;");
+    // Content Security Policy - Actualizado para Google OAuth
+    header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://www.gstatic.com https://apis.google.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://accounts.google.com; img-src 'self' data: https: http:; font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; connect-src 'self' https://identitytoolkit.googleapis.com https://*.firebaseio.com https://www.googleapis.com https://securetoken.googleapis.com https://apis.google.com https://accounts.google.com https://*.gstatic.com; frame-src 'self' https://accounts.google.com https://auth-4edc2.firebaseapp.com; object-src 'none';");
     
     // Referrer Policy
     header('Referrer-Policy: strict-origin-when-cross-origin');
