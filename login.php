@@ -1,3 +1,57 @@
+<?php
+require_once 'includes/session.php';
+require_once 'config/firebase-config.php';
+require_once 'includes/auth.php';
+
+// Si ya está logueado, redirigir al dashboard
+if (isLoggedIn()) {
+    header('Location: dashboard.php');
+    exit();
+}
+
+$error = '';
+$success = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
+    
+    if (empty($email) || empty($password)) {
+        $error = 'Por favor ingresa email y contraseña';
+    } else {
+        $config = require 'config/firebase-config.php';
+        $auth = new FirebaseAuth($config['apiKey']);
+        
+        $result = $auth->signIn($email, $password);
+        
+        if ($result['success']) {
+            // Login exitoso
+            $userData = $result['data'];
+            setUserSession(
+                $userData['localId'],
+                $userData['email'],
+                $userData['idToken']
+            );
+            
+            header('Location: dashboard.php');
+            exit();
+        } else {
+            // Error en login
+            $errorMessage = $result['error'];
+            
+            // Traducir errores comunes
+            if (strpos($errorMessage, 'INVALID_PASSWORD') !== false || 
+                strpos($errorMessage, 'EMAIL_NOT_FOUND') !== false) {
+                $error = 'Email o contraseña incorrectos';
+            } elseif (strpos($errorMessage, 'TOO_MANY_ATTEMPTS') !== false) {
+                $error = 'Demasiados intentos fallidos. Intenta más tarde';
+            } else {
+                $error = 'Error al iniciar sesión: ' . $errorMessage;
+            }
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -137,60 +191,6 @@
     </style>
 </head>
 <body>
-    <?php
-    require_once 'includes/session.php';
-    require_once 'config/firebase-config.php';
-    require_once 'includes/auth.php';
-    
-    // Si ya está logueado, redirigir al dashboard
-    if (isLoggedIn()) {
-        header('Location: dashboard.php');
-        exit();
-    }
-    
-    $error = '';
-    $success = '';
-    
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $email = $_POST['email'] ?? '';
-        $password = $_POST['password'] ?? '';
-        
-        if (empty($email) || empty($password)) {
-            $error = 'Por favor ingresa email y contraseña';
-        } else {
-            $config = require 'config/firebase-config.php';
-            $auth = new FirebaseAuth($config['apiKey']);
-            
-            $result = $auth->signIn($email, $password);
-            
-            if ($result['success']) {
-                // Login exitoso
-                $userData = $result['data'];
-                setUserSession(
-                    $userData['localId'],
-                    $userData['email'],
-                    $userData['idToken']
-                );
-                
-                header('Location: dashboard.php');
-                exit();
-            } else {
-                // Error en login
-                $errorMessage = $result['error'];
-                
-                // Traducir errores comunes
-                if (strpos($errorMessage, 'INVALID_PASSWORD') !== false || 
-                    strpos($errorMessage, 'EMAIL_NOT_FOUND') !== false) {
-                    $error = 'Email o contraseña incorrectos';
-                } elseif (strpos($errorMessage, 'TOO_MANY_ATTEMPTS') !== false) {
-                    $error = 'Demasiados intentos fallidos. Intenta más tarde';
-                } else {
-                    $error = 'Error al iniciar sesión: ' . $errorMessage;
-                }
-            }
-        }
-    }
-    ?>
     
     <div class="login-container">
         <div class="login-header">

@@ -1,3 +1,62 @@
+<?php
+require_once 'includes/session.php';
+require_once 'config/firebase-config.php';
+require_once 'includes/auth.php';
+
+// Si ya está logueado, redirigir al dashboard
+if (isLoggedIn()) {
+    header('Location: dashboard.php');
+    exit();
+}
+
+$error = '';
+$success = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
+    $confirmPassword = $_POST['confirm_password'] ?? '';
+    
+    if (empty($email) || empty($password) || empty($confirmPassword)) {
+        $error = 'Todos los campos son obligatorios';
+    } elseif ($password !== $confirmPassword) {
+        $error = 'Las contraseñas no coinciden';
+    } elseif (strlen($password) < 6) {
+        $error = 'La contraseña debe tener al menos 6 caracteres';
+    } else {
+        $config = require 'config/firebase-config.php';
+        $auth = new FirebaseAuth($config['apiKey']);
+        
+        $result = $auth->signUp($email, $password);
+        
+        if ($result['success']) {
+            // Registro exitoso - crear sesión
+            $userData = $result['data'];
+            setUserSession(
+                $userData['localId'],
+                $userData['email'],
+                $userData['idToken']
+            );
+            
+            header('Location: dashboard.php');
+            exit();
+        } else {
+            // Error en registro
+            $errorMessage = $result['error'];
+            
+            if (strpos($errorMessage, 'EMAIL_EXISTS') !== false) {
+                $error = 'Este email ya está registrado';
+            } elseif (strpos($errorMessage, 'INVALID_EMAIL') !== false) {
+                $error = 'Email inválido';
+            } elseif (strpos($errorMessage, 'WEAK_PASSWORD') !== false) {
+                $error = 'Contraseña muy débil';
+            } else {
+                $error = 'Error al registrar: ' . $errorMessage;
+            }
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>

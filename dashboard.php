@@ -1,3 +1,59 @@
+<?php
+require_once 'includes/session.php';
+require_once 'includes/clients.php';
+
+requireLogin();
+
+$clientsManager = new ClientsManager();
+$message = '';
+$messageType = '';
+
+// Manejar acciones CRUD
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_POST['action'] ?? '';
+    
+    switch ($action) {
+        case 'create':
+            $result = $clientsManager->createClient($_POST);
+            if ($result) {
+                $message = 'Cliente creado exitosamente';
+                $messageType = 'success';
+            } else {
+                $message = 'Error al crear cliente';
+                $messageType = 'danger';
+            }
+            break;
+            
+        case 'update':
+            $clientId = $_POST['client_id'] ?? '';
+            $result = $clientsManager->updateClient($clientId, $_POST);
+            if ($result) {
+                $message = 'Cliente actualizado exitosamente';
+                $messageType = 'success';
+            } else {
+                $message = 'Error al actualizar cliente';
+                $messageType = 'danger';
+            }
+            break;
+            
+        case 'delete':
+            $clientId = $_POST['client_id'] ?? '';
+            $result = $clientsManager->deleteClient($clientId);
+            if ($result !== false) {
+                $message = 'Cliente eliminado exitosamente';
+                $messageType = 'success';
+            } else {
+                $message = 'Error al eliminar cliente';
+                $messageType = 'danger';
+            }
+            break;
+    }
+}
+
+// Obtener todos los clientes
+$clients = $clientsManager->getAllClients();
+$totalClients = count($clients);
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -72,62 +128,6 @@
     </style>
 </head>
 <body>
-    <?php
-    require_once 'includes/session.php';
-    require_once 'includes/clients.php';
-    
-    requireLogin();
-    
-    $clientsManager = new ClientsManager();
-    $message = '';
-    $messageType = '';
-    
-    // Manejar acciones CRUD
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $action = $_POST['action'] ?? '';
-        
-        switch ($action) {
-            case 'create':
-                $result = $clientsManager->createClient($_POST);
-                if ($result) {
-                    $message = 'Cliente creado exitosamente';
-                    $messageType = 'success';
-                } else {
-                    $message = 'Error al crear cliente';
-                    $messageType = 'danger';
-                }
-                break;
-                
-            case 'update':
-                $clientId = $_POST['client_id'] ?? '';
-                $result = $clientsManager->updateClient($clientId, $_POST);
-                if ($result) {
-                    $message = 'Cliente actualizado exitosamente';
-                    $messageType = 'success';
-                } else {
-                    $message = 'Error al actualizar cliente';
-                    $messageType = 'danger';
-                }
-                break;
-                
-            case 'delete':
-                $clientId = $_POST['client_id'] ?? '';
-                $result = $clientsManager->deleteClient($clientId);
-                if ($result !== false) {
-                    $message = 'Cliente eliminado exitosamente';
-                    $messageType = 'success';
-                } else {
-                    $message = 'Error al eliminar cliente';
-                    $messageType = 'danger';
-                }
-                break;
-        }
-    }
-    
-    // Obtener todos los clientes
-    $clients = $clientsManager->getAllClients();
-    $totalClients = count($clients);
-    ?>
     
     <div class="container">
         <!-- Navbar -->
