@@ -1,0 +1,30 @@
+# Ignorar dependencias de Composer
+/vendor/
+
+# Ignorar node_modules (Firebase CLI)
+/node_modules/
+package-lock.json
+
+# Ignorar configuración de Firebase (sensible)
+config/firebase-config.php
+
+# Firebase
+.firebase/
+firebase-debug.log
+.firebaserc
+firebase.json
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+*.log
+
+# Archivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Composer
+composer.lock
+composer.phar
