@@ -86,6 +86,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
         
+        // Forzar selección de cuenta cada vez
+        provider.setCustomParameters({
+            prompt: 'select_account'
+        });
+        
         // Exponer función global para login con Google
         window.signInWithGoogle = async function() {
             const btn = document.getElementById('googleBtn');
@@ -121,7 +126,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error al iniciar sesión con Google: ' + error.message);
+                
+                let errorMsg = 'Error al iniciar sesión con Google: ';
+                
+                // Detectar error de dominio no autorizado
+                if (error.code === 'auth/unauthorized-domain' || 
+                    error.message.includes('auth/internal-error') ||
+                    error.message.includes('unauthorized-domain')) {
+                    errorMsg = '⚠️ Dominio no autorizado en Firebase.\n\n';
+                    errorMsg += '📋 Para solucionarlo:\n';
+                    errorMsg += '1. Ve a Firebase Console\n';
+                    errorMsg += '2. Authentication → Settings → Authorized domains\n';
+                    errorMsg += '3. Agrega: oauth-production-7fac.up.railway.app\n\n';
+                    errorMsg += '🔗 O intenta desde localhost';
+                } else {
+                    errorMsg += error.message;
+                }
+                
+                alert(errorMsg);
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fab fa-google"></i> Continuar con Google';
             }
