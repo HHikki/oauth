@@ -55,9 +55,17 @@ function isAdmin() {
         return false;
     }
     
+    // Primero verificar en la configuración (admins iniciales)
     $config = require __DIR__ . '/../config/firebase-config.php';
     $adminEmails = $config['adminEmails'] ?? [];
     $userEmail = getUserEmail();
     
-    return in_array($userEmail, $adminEmails);
+    if (in_array($userEmail, $adminEmails)) {
+        return true;
+    }
+    
+    // Luego verificar en la base de datos
+    require_once __DIR__ . '/admins.php';
+    $adminsManager = new AdminsManager();
+    return $adminsManager->isAdmin($userEmail);
 }

@@ -5,7 +5,8 @@
 /node_modules/
 package-lock.json
 
-# NO ignorar firebase-config.php (ahora usa variables de entorno)
+# Archivos sensibles - NO SUBIR A PRODUCCIÓN
+# Descomentar si almacenas credenciales localmente
 # config/firebase-config.php
 
 # Firebase CLI
@@ -13,18 +14,29 @@ package-lock.json
 firebase-debug.log
 .firebaserc
 firebase.json
+database.rules.json
 
 # Archivos del sistema
 .DS_Store
 Thumbs.db
 *.log
+*.bak
+*.tmp
 
 # Archivos de IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*.sublime-*
 
 # Composer
 composer.lock
 composer.phar
+
+# PHP
+*.cache
+error_log
+
+# Archivos temporales de Railway/Render
+.dockerignore.tmp

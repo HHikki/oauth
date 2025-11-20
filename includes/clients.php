@@ -40,11 +40,21 @@ class ClientsManager {
     
     // Crear nuevo cliente
     public function createClient($data) {
+        // Validar y sanitizar datos
+        if (empty($data['nombre']) || empty($data['email']) || empty($data['telefono'])) {
+            return false;
+        }
+        
+        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+        
         $clientData = [
-            'nombre' => $data['nombre'],
-            'email' => $data['email'],
-            'telefono' => $data['telefono'],
-            'direccion' => $data['direccion'],
+            'nombre' => htmlspecialchars(trim($data['nombre']), ENT_QUOTES, 'UTF-8'),
+            'email' => filter_var(trim($data['email']), FILTER_SANITIZE_EMAIL),
+            'telefono' => htmlspecialchars(trim($data['telefono']), ENT_QUOTES, 'UTF-8'),
+            'direccion' => htmlspecialchars(trim($data['direccion'] ?? ''), ENT_QUOTES, 'UTF-8'),
+            'empresa' => htmlspecialchars(trim($data['empresa'] ?? ''), ENT_QUOTES, 'UTF-8'),
             'created_at' => date('Y-m-d H:i:s')
         ];
         
@@ -53,11 +63,26 @@ class ClientsManager {
     
     // Actualizar cliente
     public function updateClient($id, $data) {
+        // Validar ID
+        if (empty($id)) {
+            return false;
+        }
+        
+        // Validar y sanitizar datos
+        if (empty($data['nombre']) || empty($data['email']) || empty($data['telefono'])) {
+            return false;
+        }
+        
+        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+        
         $clientData = [
-            'nombre' => $data['nombre'],
-            'email' => $data['email'],
-            'telefono' => $data['telefono'],
-            'direccion' => $data['direccion'],
+            'nombre' => htmlspecialchars(trim($data['nombre']), ENT_QUOTES, 'UTF-8'),
+            'email' => filter_var(trim($data['email']), FILTER_SANITIZE_EMAIL),
+            'telefono' => htmlspecialchars(trim($data['telefono']), ENT_QUOTES, 'UTF-8'),
+            'direccion' => htmlspecialchars(trim($data['direccion'] ?? ''), ENT_QUOTES, 'UTF-8'),
+            'empresa' => htmlspecialchars(trim($data['empresa'] ?? ''), ENT_QUOTES, 'UTF-8'),
             'updated_at' => date('Y-m-d H:i:s')
         ];
         

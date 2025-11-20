@@ -1,15 +1,25 @@
 <?php
 // Callback para manejar la autenticación con Google
 require_once 'includes/session.php';
+require_once 'includes/security.php';
 require_once 'config/firebase-config.php';
 require_once 'includes/auth.php';
 
+// Headers de seguridad
+setSecurityHeaders();
 header('Content-Type: application/json');
 
 // Verificar que sea una petición POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['success' => false, 'error' => 'Método no permitido']);
+    exit();
+}
+
+// Verificar rate limiting
+if (!checkRateLimit('google_login', 10, 300)) {
+    http_response_code(429);
+    echo json_encode(['success' => false, 'error' => 'Demasiados intentos. Espera un momento.']);
     exit();
 }
 

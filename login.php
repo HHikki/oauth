@@ -1,7 +1,11 @@
 <?php
 require_once 'includes/session.php';
+require_once 'includes/security.php';
 require_once 'config/firebase-config.php';
 require_once 'includes/auth.php';
+
+// Headers de seguridad
+setSecurityHeaders();
 
 // Si ya está logueado, redirigir al dashboard
 if (isLoggedIn()) {
@@ -13,12 +17,20 @@ $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'] ?? '';
-    $password = $_POST['password'] ?? '';
-    
-    if (empty($email) || empty($password)) {
-        $error = 'Por favor ingresa email y contraseña';
+    // Verificar rate limiting
+    if (!checkRateLimit('login', 5, 300)) {
+        $waitTime = getRateLimitWaitTime('login', 300);
+        $minutes = ceil($waitTime / 60);
+        $error = "Demasiados intentos fallidos. Espera {$minutes} minuto(s) antes de intentar nuevamente.";
     } else {
+        $email = trim($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
+        
+        if (empty($email) || empty($password)) {
+            $error = 'Por favor ingresa email y contraseña';
+        } elseif (!validateEmail($email)) {
+            $error = 'Email inválido';
+        } else {
         $config = require 'config/firebase-config.php';
         $auth = new FirebaseAuth($config['apiKey']);
         
@@ -48,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $error = 'Error al iniciar sesión: ' . $errorMessage;
             }
+        }
         }
     }
 }
