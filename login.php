@@ -78,8 +78,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, signInWithPopup, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         
-        // Configuración de Firebase
-        const firebaseConfig = <?php echo json_encode(require 'config/firebase-config.php'); ?>;
+        // Configuración de Firebase (solo las credenciales necesarias)
+        const firebaseConfig = {
+            apiKey: "<?php $config = require 'config/firebase-config.php'; echo $config['apiKey']; ?>",
+            authDomain: "<?php echo $config['authDomain']; ?>",
+            databaseURL: "<?php echo $config['databaseURL']; ?>",
+            projectId: "<?php echo $config['projectId']; ?>",
+            storageBucket: "<?php echo $config['storageBucket']; ?>",
+            messagingSenderId: "<?php echo $config['messagingSenderId']; ?>",
+            appId: "<?php echo $config['appId']; ?>"
+        };
+        
+        console.log('Firebase Config:', firebaseConfig);
         
         // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
@@ -125,22 +135,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new Error(data.error || 'Error al iniciar sesión');
                 }
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error completo:', error);
+                console.error('Error code:', error.code);
+                console.error('Error message:', error.message);
                 
-                let errorMsg = 'Error al iniciar sesión con Google: ';
+                let errorMsg = '';
                 
-                // Detectar error de dominio no autorizado
-                if (error.code === 'auth/unauthorized-domain' || 
-                    error.message.includes('auth/internal-error') ||
-                    error.message.includes('unauthorized-domain')) {
-                    errorMsg = '⚠️ Dominio no autorizado en Firebase.\n\n';
-                    errorMsg += '📋 Para solucionarlo:\n';
-                    errorMsg += '1. Ve a Firebase Console\n';
-                    errorMsg += '2. Authentication → Settings → Authorized domains\n';
-                    errorMsg += '3. Agrega: oauth-production-7fac.up.railway.app\n\n';
-                    errorMsg += '🔗 O intenta desde localhost';
+                // Detectar diferentes tipos de errores
+                if (error.code === 'auth/unauthorized-domain') {
+                    errorMsg = '⚠️ Error de dominio no autorizado.\n';
+                    errorMsg += 'Verifica que oauth-production-7fac.up.railway.app esté en Firebase.';
+                } else if (error.code === 'auth/popup-blocked') {
+                    errorMsg = '🚫 Popup bloqueado por el navegador.\n';
+                    errorMsg += 'Permite popups para este sitio e intenta nuevamente.';
+                } else if (error.code === 'auth/popup-closed-by-user') {
+                    errorMsg = '❌ Popup cerrado.\n';
+                    errorMsg += 'Intenta nuevamente y completa el proceso de autenticación.';
+                } else if (error.code === 'auth/cancelled-popup-request') {
+                    errorMsg = '⚠️ Solicitud cancelada.\n';
+                    errorMsg += 'Ya hay un popup abierto. Ciérralo e intenta de nuevo.';
+                } else if (error.message.includes('internal-error')) {
+                    errorMsg = '⚠️ Error interno de Firebase.\n\n';
+                    errorMsg += 'Posibles causas:\n';
+                    errorMsg += '1. El proveedor de Google no está habilitado en Firebase\n';
+                    errorMsg += '2. Configuración incorrecta de OAuth\n';
+                    errorMsg += '3. Problema con las credenciales de Firebase\n\n';
+                    errorMsg += 'Verifica en Firebase Console:\n';
+                    errorMsg += 'Authentication → Sign-in method → Google → Habilitado';
                 } else {
-                    errorMsg += error.message;
+                    errorMsg = 'Error: ' + (error.message || 'Error desconocido');
                 }
                 
                 alert(errorMsg);
