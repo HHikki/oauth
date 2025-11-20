@@ -1,6 +1,8 @@
 <?php
 // Manejo de sesiones
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 function isLoggedIn() {
     return isset($_SESSION['user_id']) && isset($_SESSION['user_email']);
