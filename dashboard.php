@@ -4,6 +4,12 @@ require_once 'includes/clients.php';
 
 requireLogin();
 
+// Si es admin, redirigir al dashboard de admin
+if (isAdmin()) {
+    header('Location: admin-dashboard.php');
+    exit();
+}
+
 $clientsManager = new ClientsManager();
 $message = '';
 $messageType = '';

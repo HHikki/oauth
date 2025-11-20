@@ -3,6 +3,11 @@
 // En producción (Railway), usa variables de entorno
 // En desarrollo local, usa los valores directos
 
+// Lista de admins (emails)
+define('ADMIN_EMAILS', [
+    'hikkidev27@gmail.com' 
+]);
+
 return [
     'apiKey' => getenv('FIREBASE_API_KEY') ?: "AIzaSyD0A2GlfjhYQNR1EbYnQU6zGmL1ULtsyvE",
     'authDomain' => getenv('FIREBASE_AUTH_DOMAIN') ?: "auth-4edc2.firebaseapp.com",

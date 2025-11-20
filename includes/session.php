@@ -49,3 +49,12 @@ function getUserDisplayName() {
 function getUserPhotoURL() {
     return isset($_SESSION['user_photo_url']) ? $_SESSION['user_photo_url'] : null;
 }
+
+function isAdmin() {
+    if (!isLoggedIn()) {
+        return false;
+    }
+    
+    $userEmail = getUserEmail();
+    return in_array($userEmail, ADMIN_EMAILS);
+}
