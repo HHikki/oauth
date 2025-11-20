@@ -5,10 +5,10 @@
 /node_modules/
 package-lock.json
 
-# Ignorar configuración de Firebase (sensible)
-config/firebase-config.php
+# NO ignorar firebase-config.php (ahora usa variables de entorno)
+# config/firebase-config.php
 
-# Firebase
+# Firebase CLI
 .firebase/
 firebase-debug.log
 .firebaserc
