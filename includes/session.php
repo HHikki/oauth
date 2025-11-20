@@ -55,6 +55,9 @@ function isAdmin() {
         return false;
     }
     
+    $config = require __DIR__ . '/../config/firebase-config.php';
+    $adminEmails = $config['adminEmails'] ?? [];
     $userEmail = getUserEmail();
-    return in_array($userEmail, ADMIN_EMAILS);
+    
+    return in_array($userEmail, $adminEmails);
 }
