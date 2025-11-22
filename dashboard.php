@@ -201,6 +201,7 @@ $totalClients = count($clients);
                                         <th>Nombre</th>
                                         <th>Email</th>
                                         <th>Teléfono</th>
+                                        <th>Empresa</th>
                                         <th>Dirección</th>
                                         <th class="text-center">Acciones</th>
                                     </tr>
@@ -208,7 +209,7 @@ $totalClients = count($clients);
                                 <tbody>
                                     <?php if (empty($clients)): ?>
                                         <tr>
-                                            <td colspan="6" class="text-center py-4 text-muted">
+                                            <td colspan="7" class="text-center py-4 text-muted">
                                                 <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
                                                 No hay clientes registrados. ¡Crea el primero!
                                             </td>
@@ -221,6 +222,7 @@ $totalClients = count($clients);
                                                 <td><?php echo htmlspecialchars($client['nombre']); ?></td>
                                                 <td><?php echo htmlspecialchars($client['email']); ?></td>
                                                 <td><?php echo htmlspecialchars($client['telefono']); ?></td>
+                                                <td><?php echo htmlspecialchars($client['empresa'] ?? '-'); ?></td>
                                                 <td><?php echo htmlspecialchars($client['direccion']); ?></td>
                                                 <td class="text-center table-actions">
                                                     <button class="btn btn-sm btn-warning" 
@@ -276,6 +278,11 @@ $totalClients = count($clients);
                         </div>
                         
                         <div class="mb-3">
+                            <label class="form-label">Empresa</label>
+                            <input type="text" class="form-control" name="empresa" placeholder="Opcional">
+                        </div>
+                        
+                        <div class="mb-3">
                             <label class="form-label">Dirección</label>
                             <textarea class="form-control" name="direccion" rows="2" required></textarea>
                         </div>
@@ -320,6 +327,11 @@ $totalClients = count($clients);
                         </div>
                         
                         <div class="mb-3">
+                            <label class="form-label">Empresa</label>
+                            <input type="text" class="form-control" name="empresa" id="edit_empresa" placeholder="Opcional">
+                        </div>
+                        
+                        <div class="mb-3">
                             <label class="form-label">Dirección</label>
                             <textarea class="form-control" name="direccion" id="edit_direccion" rows="2" required></textarea>
                         </div>
@@ -357,6 +369,10 @@ $totalClients = count($clients);
                         <p id="view_telefono" class="ms-4"></p>
                     </div>
                     <div class="mb-3">
+                        <strong><i class="fas fa-building"></i> Empresa:</strong>
+                        <p id="view_empresa" class="ms-4"></p>
+                    </div>
+                    <div class="mb-3">
                         <strong><i class="fas fa-map-marker-alt"></i> Dirección:</strong>
                         <p id="view_direccion" class="ms-4"></p>
                     </div>
@@ -382,6 +398,7 @@ $totalClients = count($clients);
             document.getElementById('edit_nombre').value = client.nombre;
             document.getElementById('edit_email').value = client.email;
             document.getElementById('edit_telefono').value = client.telefono;
+            document.getElementById('edit_empresa').value = client.empresa || '';
             document.getElementById('edit_direccion').value = client.direccion;
             
             const modal = new bootstrap.Modal(document.getElementById('modalEditarCliente'));
@@ -393,6 +410,7 @@ $totalClients = count($clients);
             document.getElementById('view_nombre').textContent = client.nombre;
             document.getElementById('view_email').textContent = client.email;
             document.getElementById('view_telefono').textContent = client.telefono;
+            document.getElementById('view_empresa').textContent = client.empresa || 'No especificada';
             document.getElementById('view_direccion').textContent = client.direccion;
             
             const modal = new bootstrap.Modal(document.getElementById('modalVerCliente'));

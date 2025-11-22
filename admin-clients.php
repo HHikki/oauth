@@ -220,21 +220,21 @@ $totalClients = count($clients);
                             </tr>
                         <?php else: ?>
                             <?php $counter = 1; ?>
-                            <?php foreach ($clients as $clientId => $client): ?>
+                            <?php foreach ($clients as $client): ?>
                                 <tr>
                                     <td><?php echo $counter++; ?></td>
                                     <td><?php echo htmlspecialchars($client['nombre'] ?? ''); ?></td>
                                     <td><?php echo htmlspecialchars($client['email'] ?? ''); ?></td>
                                     <td><?php echo htmlspecialchars($client['telefono'] ?? ''); ?></td>
-                                    <td><?php echo htmlspecialchars($client['empresa'] ?? ''); ?></td>
+                                    <td><?php echo htmlspecialchars($client['empresa'] ?? '-'); ?></td>
                                     <td class="table-actions">
-                                        <button class="btn btn-sm btn-info" onclick="viewClient('<?php echo $clientId; ?>')">
+                                        <button class="btn btn-sm btn-info" onclick='viewClient(<?php echo json_encode($client); ?>)'>
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-warning" onclick="editClient('<?php echo $clientId; ?>')">
+                                        <button class="btn btn-sm btn-warning" onclick='editClient(<?php echo json_encode($client); ?>)'>
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-danger" onclick="deleteClient('<?php echo $clientId; ?>')">
+                                        <button class="btn btn-sm btn-danger" onclick="deleteClient('<?php echo htmlspecialchars($client['id']); ?>')">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
@@ -288,8 +288,113 @@ $totalClients = count($clients);
         </div>
     </div>
     
+    <!-- Modal Ver Cliente -->
+    <div class="modal fade" id="viewClientModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="modal-title"><i class="fas fa-eye"></i> Información del Cliente</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <strong><i class="fas fa-user"></i> Nombre:</strong>
+                        <p id="view_nombre" class="ms-4"></p>
+                    </div>
+                    <div class="mb-3">
+                        <strong><i class="fas fa-envelope"></i> Email:</strong>
+                        <p id="view_email" class="ms-4"></p>
+                    </div>
+                    <div class="mb-3">
+                        <strong><i class="fas fa-phone"></i> Teléfono:</strong>
+                        <p id="view_telefono" class="ms-4"></p>
+                    </div>
+                    <div class="mb-3">
+                        <strong><i class="fas fa-building"></i> Empresa:</strong>
+                        <p id="view_empresa" class="ms-4"></p>
+                    </div>
+                    <div class="mb-3">
+                        <strong><i class="fas fa-map-marker-alt"></i> Dirección:</strong>
+                        <p id="view_direccion" class="ms-4"></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Editar Cliente -->
+    <div class="modal fade" id="editClientModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="modal-title"><i class="fas fa-edit"></i> Editar Cliente</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST">
+                    <div class="modal-body">
+                        <input type="hidden" name="action" value="update">
+                        <input type="hidden" name="client_id" id="edit_client_id">
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" name="nombre" id="edit_nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" id="edit_email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" name="telefono" id="edit_telefono" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Empresa</label>
+                            <input type="text" class="form-control" name="empresa" id="edit_empresa" placeholder="Opcional">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Dirección</label>
+                            <textarea class="form-control" name="direccion" id="edit_direccion" rows="2" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Actualizar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        function viewClient(client) {
+            document.getElementById('view_nombre').textContent = client.nombre || 'N/A';
+            document.getElementById('view_email').textContent = client.email || 'N/A';
+            document.getElementById('view_telefono').textContent = client.telefono || 'N/A';
+            document.getElementById('view_empresa').textContent = client.empresa || 'No especificada';
+            document.getElementById('view_direccion').textContent = client.direccion || 'N/A';
+            
+            const modal = new bootstrap.Modal(document.getElementById('viewClientModal'));
+            modal.show();
+        }
+        
+        function editClient(client) {
+            document.getElementById('edit_client_id').value = client.id;
+            document.getElementById('edit_nombre').value = client.nombre || '';
+            document.getElementById('edit_email').value = client.email || '';
+            document.getElementById('edit_telefono').value = client.telefono || '';
+            document.getElementById('edit_empresa').value = client.empresa || '';
+            document.getElementById('edit_direccion').value = client.direccion || '';
+            
+            const modal = new bootstrap.Modal(document.getElementById('editClientModal'));
+            modal.show();
+        }
+        
         function deleteClient(clientId) {
             if (confirm('¿Estás seguro de eliminar este cliente?')) {
                 const form = document.createElement('form');
